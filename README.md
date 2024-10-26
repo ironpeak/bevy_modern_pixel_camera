@@ -72,7 +72,7 @@ fn setup(
 A small example is included in the crate. Run it with:
 
 ```console
-cargo run --example flappin
+cargo run --example mire
 ```
 
 ## Bevy versions supported
