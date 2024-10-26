@@ -1,6 +1,11 @@
 use bevy::{
-    prelude::*,
-    render::camera::{CameraProjection, NormalizedRenderTarget, ScalingMode},
+    asset::{AssetEvent, AssetId},
+    math::{UVec2, Vec2},
+    prelude::{
+        Camera, Component, DetectChanges, Entity, EventReader, Image, OrthographicProjection,
+        Query, With,
+    },
+    render::camera::{NormalizedRenderTarget, ScalingMode, Viewport},
     utils::HashSet,
     window::{PrimaryWindow, WindowCreated, WindowResized, WindowScaleFactorChanged},
 };
@@ -27,14 +32,26 @@ pub enum PixelZoom {
     FitHeight(i32),
 }
 
+// from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
+#[derive(Component, Debug, Clone, PartialEq)]
+/// Configure a `Camera2dBundle` to automatically set the viewport so that only
+/// pixels inside the desired resolution (as defined by the `PixelZoom`
+/// component) are displayed.
+pub struct PixelViewport;
+
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn pixel_zoom_system<T: CameraProjection + Component>(
+pub(crate) fn pixel_zoom_system(
     mut window_resized_events: EventReader<WindowResized>,
     mut window_created_events: EventReader<WindowCreated>,
     mut window_scale_factor_changed_events: EventReader<WindowScaleFactorChanged>,
     mut image_asset_events: EventReader<AssetEvent<Image>>,
     primary_window: Query<Entity, With<PrimaryWindow>>,
-    mut cameras: Query<(&mut Camera, &PixelZoom, &mut OrthographicProjection)>,
+    mut cameras: Query<(
+        &mut Camera,
+        &PixelZoom,
+        Option<&PixelViewport>,
+        &mut OrthographicProjection,
+    )>,
 ) {
     // from: https://github.com/bevyengine/bevy/blob/release-0.14.2/crates/bevy_render/src/camera/camera.rs
     let primary_window = primary_window.iter().next();
@@ -56,7 +73,7 @@ pub(crate) fn pixel_zoom_system<T: CameraProjection + Component>(
         })
         .collect();
 
-    for (camera, pixel_zoom, mut projection) in &mut cameras {
+    for (mut camera, pixel_zoom, pixel_viewport, mut projection) in &mut cameras {
         if let Some(normalized_target) = camera.target.normalize(primary_window) {
             if is_changed(
                 &normalized_target,
@@ -79,6 +96,15 @@ pub(crate) fn pixel_zoom_system<T: CameraProjection + Component>(
                         }
                     }
                     _ => projection.scaling_mode = ScalingMode::WindowSize(zoom),
+                }
+
+                if pixel_viewport.is_some() {
+                    let physical_size = match camera.physical_target_size() {
+                        Some(size) => size,
+                        None => continue,
+                    };
+
+                    set_viewport(&mut camera, pixel_zoom, zoom, physical_size, logical_size);
                 }
             }
         }
@@ -121,4 +147,50 @@ fn auto_zoom(mode: &PixelZoom, logical_size: Vec2) -> i32 {
         }
         PixelZoom::Fixed(zoom) => *zoom,
     }
+}
+
+fn set_viewport(
+    camera: &mut Camera,
+    mode: &PixelZoom,
+    zoom: f32,
+    physical_size: UVec2,
+    logical_size: Vec2,
+) {
+    // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
+    let (auto_width, auto_height) = match mode {
+        PixelZoom::FitSize { width, height } => (Some(*width), Some(*height)),
+        PixelZoom::FitWidth(width) => (Some(*width), None),
+        PixelZoom::FitHeight(height) => (None, Some(*height)),
+        PixelZoom::Fixed(..) => (None, None),
+    };
+
+    let scale_factor = (physical_size.x as f32) / logical_size.x;
+
+    let mut viewport_width = physical_size.x;
+    let mut viewport_x = 0;
+    if let Some(target_width) = auto_width {
+        let logical_target_width = (target_width as f32) * zoom;
+        viewport_width = (scale_factor * logical_target_width) as u32;
+        viewport_x = (scale_factor * (logical_size.x - logical_target_width)) as u32 / 2;
+    }
+
+    let mut viewport_height = physical_size.y;
+    let mut viewport_y = 0;
+    if let Some(target_height) = auto_height {
+        let logicat_target_height = (target_height as f32) * zoom;
+        viewport_height = (scale_factor * logicat_target_height) as u32;
+        viewport_y = (scale_factor * (logical_size.y - logicat_target_height)) as u32 / 2;
+    }
+
+    camera.viewport = Some(Viewport {
+        physical_position: UVec2 {
+            x: viewport_x,
+            y: viewport_y,
+        },
+        physical_size: UVec2 {
+            x: viewport_width,
+            y: viewport_height,
+        },
+        ..Default::default()
+    });
 }

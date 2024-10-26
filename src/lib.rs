@@ -1,1 +1,2 @@
-pub mod pixel_zoom;
+pub mod plugin;
+pub mod zoom;
