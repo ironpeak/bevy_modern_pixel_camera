@@ -1,7 +1,18 @@
 [package]
 name = "bevy_modern_pixel_camera"
 version = "0.1.0"
+authors = [
+    "drakmaniso <moussault.laurent@gmail.com>",
+    "Hrafn Orri Hrafnkelsson <hrafn@vidfjord.is>",
+]
 edition = "2021"
+description = "A simple pixel-perfect camera plugin for Bevy, suitable for pixel-art"
+readme = "README.md"
+repository = "https://github.com/ironpeak/bevy_modern_pixel_camera"
+keywords = ["bevy", "graphics", "2d", "pixels", "pixel-art"]
+categories = ["graphics", "game-development"]
+exclude = ["assets/**", ".vscode/**"]
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 bevy = { version = "0.14", default-features = false, features = [
@@ -9,3 +20,18 @@ bevy = { version = "0.14", default-features = false, features = [
     "bevy_render",
     "bevy_sprite",
 ] }
+
+[dev-dependencies]
+bevy = { version = "0.14", default-features = false, features = [
+    "bevy_winit",
+    "bevy_asset",
+    "bevy_state",
+    "png",
+    "multi_threaded",
+    "x11",
+] }
+rand = "0.8"
+
+[[example]]
+name = "mire"
+required-features = ["bevy/bevy_winit", "bevy/bevy_asset", "bevy/png"]
