@@ -1,12 +1,12 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
-    log::info,
+    log::debug,
     math::{UVec2, Vec2},
     prelude::{
         Camera, Component, DetectChanges, Entity, EventReader, Image, OrthographicProjection,
         Query, With,
     },
-    render::camera::{NormalizedRenderTarget, ScalingMode, Viewport},
+    render::camera::{NormalizedRenderTarget, Viewport},
     utils::HashSet,
     window::{PrimaryWindow, WindowCreated, WindowResized, WindowScaleFactorChanged},
 };
@@ -90,27 +90,10 @@ pub(crate) fn pixel_zoom_system(
                 };
 
                 let zoom = auto_zoom(pixel_zoom, logical_size) as f32;
-                let zoom_width = f32::floor(logical_size.x / zoom);
-                let zoom_height = f32::floor(logical_size.y / zoom);
-                match projection.scaling_mode {
-                    ScalingMode::Fixed { width, height } => {
-                        if width != zoom_width || height != zoom_height {
-                            info!(
-                                "Zoom changed from {}x{} to {}x{}",
-                                width, height, zoom_width, zoom_height
-                            );
-                            projection.scaling_mode = ScalingMode::Fixed {
-                                width: zoom_width,
-                                height: zoom_height,
-                            };
-                        }
-                    }
-                    _ => {
-                        projection.scaling_mode = ScalingMode::Fixed {
-                            width: logical_size.x / zoom,
-                            height: logical_size.y / zoom,
-                        };
-                    }
+                let scale = 1.0 / zoom;
+                if scale != projection.scale {
+                    projection.scale = scale;
+                    debug!("Zoom changed");
                 }
 
                 if pixel_viewport.is_some() {
@@ -192,9 +175,9 @@ fn set_viewport(
     let mut viewport_height = physical_size.y;
     let mut viewport_y = 0;
     if let Some(target_height) = auto_height {
-        let logicat_target_height = (target_height as f32) * zoom;
-        viewport_height = (scale_factor * logicat_target_height) as u32;
-        viewport_y = (scale_factor * (logical_size.y - logicat_target_height)) as u32 / 2;
+        let logical_target_height = (target_height as f32) * zoom;
+        viewport_height = (scale_factor * logical_target_height) as u32;
+        viewport_y = (scale_factor * (logical_size.y - logical_target_height)) as u32 / 2;
     }
 
     camera.viewport = Some(Viewport {
