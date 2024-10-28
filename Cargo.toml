@@ -1,6 +1,6 @@
 [package]
 name = "bevy_modern_pixel_camera"
-version = "0.1.0"
+version = "0.2.0-rc2"
 authors = [
     "drakmaniso <moussault.laurent@gmail.com>",
     "Hrafn Orri Hrafnkelsson <hrafn@vidfjord.is>",
@@ -15,14 +15,14 @@ exclude = ["assets/**", ".vscode/**"]
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-bevy = { version = "0.14", default-features = false, features = [
+bevy = { version = "0.15.0-rc.2", default-features = false, features = [
     "bevy_core_pipeline",
     "bevy_render",
     "bevy_sprite",
 ] }
 
 [dev-dependencies]
-bevy = { version = "0.14", default-features = false, features = [
+bevy = { version = "0.15.0-rc.2", default-features = false, features = [
     "bevy_winit",
     "bevy_asset",
     "bevy_state",

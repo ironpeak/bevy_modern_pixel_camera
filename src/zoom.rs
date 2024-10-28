@@ -1,5 +1,6 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
+    log::info,
     math::{UVec2, Vec2},
     prelude::{
         Camera, Component, DetectChanges, Entity, EventReader, Image, OrthographicProjection,
@@ -89,13 +90,27 @@ pub(crate) fn pixel_zoom_system(
                 };
 
                 let zoom = auto_zoom(pixel_zoom, logical_size) as f32;
+                let zoom_width = f32::floor(logical_size.x / zoom);
+                let zoom_height = f32::floor(logical_size.y / zoom);
                 match projection.scaling_mode {
-                    ScalingMode::WindowSize(previous_zoom) => {
-                        if previous_zoom != zoom {
-                            projection.scaling_mode = ScalingMode::WindowSize(zoom)
+                    ScalingMode::Fixed { width, height } => {
+                        if width != zoom_width || height != zoom_height {
+                            info!(
+                                "Zoom changed from {}x{} to {}x{}",
+                                width, height, zoom_width, zoom_height
+                            );
+                            projection.scaling_mode = ScalingMode::Fixed {
+                                width: zoom_width,
+                                height: zoom_height,
+                            };
                         }
                     }
-                    _ => projection.scaling_mode = ScalingMode::WindowSize(zoom),
+                    _ => {
+                        projection.scaling_mode = ScalingMode::Fixed {
+                            width: logical_size.x / zoom,
+                            height: logical_size.y / zoom,
+                        };
+                    }
                 }
 
                 if pixel_viewport.is_some() {
