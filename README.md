@@ -72,13 +72,14 @@ fn setup(
 A small example is included in the crate. Run it with:
 
 ```console
-cargo run --example flappin
+cargo run --example mire
 ```
 
 ## Bevy versions supported
 
 | bevy | bevy_modern_pixel_camera |
 | ---- | ------------------------ |
+| 0.15 | 0.2                      |
 | 0.14 | 0.1                      |
 
 ## License
