@@ -32,9 +32,7 @@ the center by default), otherwise it won't be aligned with virtual pixels.
 ```rust
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-use bevy_pixel_camera::{
-    PixelCameraPlugin, PixelZoom, PixelViewport
-};
+use bevy_modern_pixel_camera::prelude::*;
 
 fn main() {
     App::new()
