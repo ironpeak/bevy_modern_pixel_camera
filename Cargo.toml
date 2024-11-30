@@ -20,15 +20,17 @@ bevy = { version = "0.15.0", default-features = false, features = [
     "bevy_render",
     "bevy_sprite",
     "bevy_window",
+    "png",                # Tempo workaround: https://github.com/bevyengine/bevy/issues/16563
 ] }
 
 [dev-dependencies]
 bevy = { version = "0.15.0", default-features = false, features = [
-    "bevy_winit",
     "bevy_asset",
-    "bevy_state",
     "png",
+    "bevy_state",
+    "bevy_winit",
     "multi_threaded",
+    "png",            # Tempo workaround: https://github.com/bevyengine/bevy/issues/16563
     "x11",
 ] }
 rand = "0.8"
