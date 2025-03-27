@@ -172,12 +172,20 @@ fn set_viewport(
         viewport_x = (scale_factor * (logical_size.x - logical_target_width)) as u32 / 2;
     }
 
+    if viewport_width > physical_size.x {
+        viewport_width = physical_size.x;
+    }
+
     let mut viewport_height = physical_size.y;
     let mut viewport_y = 0;
     if let Some(target_height) = auto_height {
         let logical_target_height = (target_height as f32) * zoom;
         viewport_height = (scale_factor * logical_target_height) as u32;
         viewport_y = (scale_factor * (logical_size.y - logical_target_height)) as u32 / 2;
+    }
+
+    if viewport_height > physical_size.y {
+        viewport_height = physical_size.y;
     }
 
     camera.viewport = Some(Viewport {
