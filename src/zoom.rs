@@ -1,13 +1,11 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
+    ecs::entity::ContainsEntity,
     log::debug,
     math::{UVec2, Vec2},
-    prelude::{
-        Camera, Component, DetectChanges, Entity, EventReader, Image, OrthographicProjection,
-        Query, With,
-    },
-    render::camera::{NormalizedRenderTarget, Viewport},
-    utils::HashSet,
+    platform::collections::HashSet,
+    prelude::{Camera, Component, DetectChanges, Entity, EventReader, Image, Query, With},
+    render::camera::{NormalizedRenderTarget, Projection, Viewport},
     window::{PrimaryWindow, WindowCreated, WindowResized, WindowScaleFactorChanged},
 };
 
@@ -51,7 +49,7 @@ pub(crate) fn pixel_zoom_system(
         &mut Camera,
         &PixelZoom,
         Option<&PixelViewport>,
-        &mut OrthographicProjection,
+        &mut Projection,
     )>,
 ) {
     // from: https://github.com/bevyengine/bevy/blob/release-0.14.2/crates/bevy_render/src/camera/camera.rs
@@ -91,11 +89,15 @@ pub(crate) fn pixel_zoom_system(
 
                 let zoom = auto_zoom(pixel_zoom, logical_size) as f32;
                 let scale = 1.0 / zoom;
-                if scale != projection.scale {
-                    projection.scale = scale;
-                    debug!("Zoom changed");
+                match projection.as_mut() {
+                    Projection::Orthographic(projection) => {
+                        if scale != projection.scale {
+                            projection.scale = scale;
+                            debug!("Zoom changed");
+                        }
+                    }
+                    _ => continue,
                 }
-
                 if pixel_viewport.is_some() {
                     let physical_size = match camera.physical_target_size() {
                         Some(size) => size,
@@ -114,13 +116,13 @@ fn is_changed(
     changed_window_ids: &HashSet<Entity>,
     changed_image_handles: &HashSet<&AssetId<Image>>,
 ) -> bool {
-    // from: https://github.com/bevyengine/bevy/blob/release-0.14.2/crates/bevy_render/src/camera/camera.rs
+    // from: https://github.com/bevyengine/bevy/blob/release-0.16.0/crates/bevy_render/src/camera/camera.rs
     match normalized_target {
         NormalizedRenderTarget::Window(window_ref) => {
             changed_window_ids.contains(&window_ref.entity())
         }
         NormalizedRenderTarget::Image(image_handle) => {
-            changed_image_handles.contains(&image_handle.id())
+            changed_image_handles.contains(&image_handle.handle.id())
         }
         NormalizedRenderTarget::TextureView(_) => true,
     }

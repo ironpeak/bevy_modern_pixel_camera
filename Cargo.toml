@@ -1,11 +1,11 @@
 [package]
 name = "bevy_modern_pixel_camera"
-version = "0.2.2"
+version = "0.3.0"
 authors = [
     "drakmaniso <moussault.laurent@gmail.com>",
     "Hrafn Orri Hrafnkelsson <hrafn@vidfjord.is>",
 ]
-edition = "2021"
+edition = "2024"
 description = "A simple pixel-perfect camera plugin for Bevy, suitable for pixel-art"
 readme = "README.md"
 repository = "https://github.com/ironpeak/bevy_modern_pixel_camera"
@@ -15,13 +15,14 @@ exclude = ["assets/**", ".vscode/**"]
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-bevy = { version = "0.15", default-features = false, features = [
+bevy = { version = "0.16", default-features = false, features = [
     "bevy_sprite",
     "bevy_window",
+    "bevy_log",
 ] }
 
 [dev-dependencies]
-bevy = { version = "0.15", default-features = false, features = [
+bevy = { version = "0.16", default-features = false, features = [
     "bevy_winit",
     "png",
 ] }
