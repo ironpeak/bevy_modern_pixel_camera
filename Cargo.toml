@@ -1,6 +1,6 @@
 [package]
 name = "bevy_modern_pixel_camera"
-version = "0.3.0"
+version = "0.3.1"
 authors = [
     "drakmaniso <moussault.laurent@gmail.com>",
     "Hrafn Orri Hrafnkelsson <hrafn@vidfjord.is>",
@@ -26,7 +26,7 @@ bevy = { version = "0.16", default-features = false, features = [
 bevy = { version = "0.16", default-features = false, features = [
     "bevy_winit",
     "png",
-    "default_font"
+    "default_font",
 ] }
 rand = "0.9"
 
@@ -36,4 +36,9 @@ required-features = ["bevy/bevy_winit", "bevy/bevy_asset", "bevy/png"]
 
 [[example]]
 name = "scale_ui"
-required-features = ["bevy/bevy_winit", "bevy/bevy_asset", "bevy/png", "bevy/default_font"]
+required-features = [
+    "bevy/bevy_winit",
+    "bevy/bevy_asset",
+    "bevy/png",
+    "bevy/default_font",
+]
