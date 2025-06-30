@@ -6,10 +6,10 @@ A simple camera plugin for the Bevy game engine, to help with the use of
 pixel-art sprites.
 
 This crates provides a plugin to automatically configure Bevy's
-`Camera2dBundle`. It works by setting the camera to an integer scaling
+`Camera2d`. It works by setting the camera to an integer scaling
 factor (using Bevy's `ScalingMode::WindowSize`), and automatically updating
 the zoom level so that the specified target resolution fills as much of the
-sceen as possible.
+screen as possible.
 
 The plugin can also automatically set and resize the viewport of the camera
 to match the target resolution.
@@ -48,12 +48,13 @@ fn setup(
     asset_server: Res<AssetServer>,
 ) {
     commands.spawn((
-        Camera2dBundle::default(),
+        Camera2d,
         PixelZoom::FitSize {
             width: 320,
             height: 180,
         },
         PixelViewport,
+        // WithUiScaling // <--- To enable UI Scaling
     ));
 
     commands.spawn(SpriteBundle {
@@ -67,16 +68,18 @@ fn setup(
 }
 ```
 
-A small example is included in the crate. Run it with:
+Two small examples are included in the crate. Run it with:
 
 ```console
 cargo run --example mire
+cargo run --example ui_scaling
 ```
 
 ## Bevy versions supported
 
 | bevy | bevy_modern_pixel_camera |
 | ---- | ------------------------ |
+| 0.16 | 0.3                      |
 | 0.15 | 0.2                      |
 | 0.14 | 0.1                      |
 

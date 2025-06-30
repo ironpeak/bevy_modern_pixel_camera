@@ -19,15 +19,21 @@ bevy = { version = "0.16", default-features = false, features = [
     "bevy_sprite",
     "bevy_window",
     "bevy_log",
+    "bevy_ui",
 ] }
 
 [dev-dependencies]
 bevy = { version = "0.16", default-features = false, features = [
     "bevy_winit",
     "png",
+    "default_font"
 ] }
 rand = "0.9"
 
 [[example]]
 name = "mire"
 required-features = ["bevy/bevy_winit", "bevy/bevy_asset", "bevy/png"]
+
+[[example]]
+name = "scale_ui"
+required-features = ["bevy/bevy_winit", "bevy/bevy_asset", "bevy/png", "bevy/default_font"]
