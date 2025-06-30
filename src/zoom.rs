@@ -1,11 +1,12 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
-    ecs::entity::ContainsEntity,
+    ecs::{entity::ContainsEntity, system::ResMut},
     log::debug,
     math::{UVec2, Vec2},
     platform::collections::HashSet,
-    prelude::{Camera, Component, DetectChanges, Entity, EventReader, Image, Query, With},
+    prelude::{Camera, Component, DetectChanges, Entity, EventReader, Has, Image, Query, With},
     render::camera::{NormalizedRenderTarget, Projection, Viewport},
+    ui::UiScale,
     window::{PrimaryWindow, WindowCreated, WindowResized, WindowScaleFactorChanged},
 };
 
@@ -31,6 +32,11 @@ pub enum PixelZoom {
     FitHeight(i32),
 }
 
+#[derive(Component, Debug, Clone, PartialEq)]
+/// Configure a `Camera2dBundle` to automatically scale the UI to fit the desired
+/// resolution (as defined by the `PixelZoom` component) displayed.
+pub struct WithUiScaling;
+
 // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
 #[derive(Component, Debug, Clone, PartialEq)]
 /// Configure a `Camera2dBundle` to automatically set the viewport so that only
@@ -44,11 +50,13 @@ pub(crate) fn pixel_zoom_system(
     mut window_created_events: EventReader<WindowCreated>,
     mut window_scale_factor_changed_events: EventReader<WindowScaleFactorChanged>,
     mut image_asset_events: EventReader<AssetEvent<Image>>,
+    mut ui_scale: ResMut<UiScale>,
     primary_window: Query<Entity, With<PrimaryWindow>>,
     mut cameras: Query<(
         &mut Camera,
         &PixelZoom,
         Option<&PixelViewport>,
+        Has<WithUiScaling>,
         &mut Projection,
     )>,
 ) {
@@ -72,7 +80,7 @@ pub(crate) fn pixel_zoom_system(
         })
         .collect();
 
-    for (mut camera, pixel_zoom, pixel_viewport, mut projection) in &mut cameras {
+    for (mut camera, pixel_zoom, pixel_viewport, with_ui_scaling, mut projection) in &mut cameras {
         if let Some(normalized_target) = camera.target.normalize(primary_window) {
             if is_changed(
                 &normalized_target,
@@ -105,6 +113,9 @@ pub(crate) fn pixel_zoom_system(
                     };
 
                     set_viewport(&mut camera, pixel_zoom, zoom, physical_size, logical_size);
+                }
+                if with_ui_scaling {
+                    ui_scale.0 = 1.0 / scale;
                 }
             }
         }
