@@ -15,7 +15,8 @@ exclude = ["assets/**", ".vscode/**"]
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-bevy = { version = "0.16", default-features = false, features = [
+bevy = { version = "0.17", default-features = false, features = [
+    "bevy_render",
     "bevy_sprite",
     "bevy_window",
     "bevy_log",
@@ -23,22 +24,11 @@ bevy = { version = "0.16", default-features = false, features = [
 ] }
 
 [dev-dependencies]
-bevy = { version = "0.16", default-features = false, features = [
-    "bevy_winit",
-    "png",
-    "default_font",
-] }
+bevy = { version = "0.17" }
 rand = "0.9"
 
 [[example]]
 name = "mire"
-required-features = ["bevy/bevy_winit", "bevy/bevy_asset", "bevy/png"]
 
 [[example]]
 name = "scale_ui"
-required-features = [
-    "bevy/bevy_winit",
-    "bevy/bevy_asset",
-    "bevy/png",
-    "bevy/default_font",
-]

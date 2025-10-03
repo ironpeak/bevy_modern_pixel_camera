@@ -1,11 +1,12 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
-    ecs::{entity::ContainsEntity, system::ResMut},
+    camera::{Projection, Viewport},
+    ecs::{message::MessageReader, system::ResMut},
     log::debug,
     math::{UVec2, Vec2},
     platform::collections::HashSet,
-    prelude::{Camera, Component, DetectChanges, Entity, EventReader, Has, Image, Query, With},
-    render::camera::{NormalizedRenderTarget, Projection, Viewport},
+    prelude::{Camera, Component, DetectChanges, Entity, Has, Image, Query, With},
+    render::camera::NormalizedRenderTargetExt,
     ui::UiScale,
     window::{PrimaryWindow, WindowCreated, WindowResized, WindowScaleFactorChanged},
 };
@@ -46,10 +47,10 @@ pub struct PixelViewport;
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn pixel_zoom_system(
-    mut window_resized_events: EventReader<WindowResized>,
-    mut window_created_events: EventReader<WindowCreated>,
-    mut window_scale_factor_changed_events: EventReader<WindowScaleFactorChanged>,
-    mut image_asset_events: EventReader<AssetEvent<Image>>,
+    mut window_resized_events: MessageReader<WindowResized>,
+    mut window_created_events: MessageReader<WindowCreated>,
+    mut window_scale_factor_changed_events: MessageReader<WindowScaleFactorChanged>,
+    mut image_asset_events: MessageReader<AssetEvent<Image>>,
     mut ui_scale: ResMut<UiScale>,
     primary_window: Query<Entity, With<PrimaryWindow>>,
     mut cameras: Query<(
@@ -82,11 +83,8 @@ pub(crate) fn pixel_zoom_system(
 
     for (mut camera, pixel_zoom, pixel_viewport, with_ui_scaling, mut projection) in &mut cameras {
         if let Some(normalized_target) = camera.target.normalize(primary_window) {
-            if is_changed(
-                &normalized_target,
-                &changed_window_ids,
-                &changed_image_handles,
-            ) || camera.is_added()
+            if normalized_target.is_changed(&changed_window_ids, &changed_image_handles)
+                || camera.is_added()
                 || projection.is_changed()
             {
                 // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
@@ -119,23 +117,6 @@ pub(crate) fn pixel_zoom_system(
                 }
             }
         }
-    }
-}
-
-fn is_changed(
-    normalized_target: &NormalizedRenderTarget,
-    changed_window_ids: &HashSet<Entity>,
-    changed_image_handles: &HashSet<&AssetId<Image>>,
-) -> bool {
-    // from: https://github.com/bevyengine/bevy/blob/release-0.16.0/crates/bevy_render/src/camera/camera.rs
-    match normalized_target {
-        NormalizedRenderTarget::Window(window_ref) => {
-            changed_window_ids.contains(&window_ref.entity())
-        }
-        NormalizedRenderTarget::Image(image_handle) => {
-            changed_image_handles.contains(&image_handle.handle.id())
-        }
-        NormalizedRenderTarget::TextureView(_) => true,
     }
 }
 
