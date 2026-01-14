@@ -36,6 +36,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             flex_direction: FlexDirection::Column,
+            border_radius: BorderRadius::MAX,
             row_gap: Val::Px(10.0),
             ..default()
         },
@@ -43,7 +44,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             (
                 base_button("Button 1"),
                 BorderColor::all(Color::BLACK),
-                BorderRadius::MAX,
                 BackgroundColor(Color::srgb(0.15, 0.15, 0.15)),
             ),
             (
@@ -52,10 +52,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     image: asset_server.load("button.png"),
                     image_mode: NodeImageMode::Sliced(TextureSlicer {
                         border: BorderRect {
-                            left: 4.0,
-                            right: 4.0,
-                            top: 4.0,
-                            bottom: 5.0
+                            min_inset: Vec2::splat(4.),
+                            max_inset: Vec2::new(4., 5.)
                         },
                         ..default()
                     }),
