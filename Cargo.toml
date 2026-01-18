@@ -15,7 +15,7 @@ exclude = ["assets/**", ".vscode/**"]
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-bevy = { version = "0.17", default-features = false, features = [
+bevy = { version = "0.18", default-features = false, features = [
     "bevy_render",
     "bevy_sprite",
     "bevy_window",
@@ -24,7 +24,7 @@ bevy = { version = "0.17", default-features = false, features = [
 ] }
 
 [dev-dependencies]
-bevy = { version = "0.17" }
+bevy = { version = "0.18" }
 rand = "0.9"
 
 [[example]]

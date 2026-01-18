@@ -1,6 +1,6 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
-    camera::{Projection, Viewport},
+    camera::{Projection, RenderTarget, Viewport},
     ecs::{message::MessageReader, system::ResMut},
     log::debug,
     math::{UVec2, Vec2},
@@ -55,6 +55,7 @@ pub(crate) fn pixel_zoom_system(
     primary_window: Query<Entity, With<PrimaryWindow>>,
     mut cameras: Query<(
         &mut Camera,
+        &RenderTarget,
         &PixelZoom,
         Option<&PixelViewport>,
         Has<WithUiScaling>,
@@ -81,8 +82,10 @@ pub(crate) fn pixel_zoom_system(
         })
         .collect();
 
-    for (mut camera, pixel_zoom, pixel_viewport, with_ui_scaling, mut projection) in &mut cameras {
-        if let Some(normalized_target) = camera.target.normalize(primary_window) {
+    for (mut camera, target, pixel_zoom, pixel_viewport, with_ui_scaling, mut projection) in
+        &mut cameras
+    {
+        if let Some(normalized_target) = target.normalize(primary_window) {
             if normalized_target.is_changed(&changed_window_ids, &changed_image_handles)
                 || camera.is_added()
                 || projection.is_changed()
