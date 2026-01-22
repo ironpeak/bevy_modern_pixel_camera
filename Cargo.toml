@@ -1,6 +1,6 @@
 [package]
 name = "bevy_modern_pixel_camera"
-version = "0.5.0"
+version = "0.5.1"
 authors = [
     "drakmaniso <moussault.laurent@gmail.com>",
     "Hrafn Orri Hrafnkelsson <hrafn@vidfjord.is>",
