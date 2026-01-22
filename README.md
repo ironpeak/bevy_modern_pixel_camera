@@ -79,6 +79,7 @@ cargo run --example scale_ui
 
 | bevy | bevy_modern_pixel_camera |
 | ---- | ------------------------ |
+| 0.18 | 0.5                      |
 | 0.17 | 0.4                      |
 | 0.16 | 0.3                      |
 | 0.15 | 0.2                      |
