@@ -1,7 +1,7 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
     camera::{Projection, RenderTarget, Viewport},
-    ecs::{message::MessageReader, system::ResMut},
+    ecs::{entity::EntityHashSet, message::MessageReader, system::ResMut},
     log::debug,
     math::{UVec2, Vec2},
     platform::collections::HashSet,
@@ -65,7 +65,7 @@ pub(crate) fn pixel_zoom_system(
     // from: https://github.com/bevyengine/bevy/blob/release-0.14.2/crates/bevy_render/src/camera/camera.rs
     let primary_window = primary_window.iter().next();
 
-    let mut changed_window_ids = HashSet::new();
+    let mut changed_window_ids = EntityHashSet::new();
     changed_window_ids.extend(window_created_events.read().map(|event| event.window));
     changed_window_ids.extend(window_resized_events.read().map(|event| event.window));
     let scale_factor_changed_window_ids: HashSet<_> = window_scale_factor_changed_events
