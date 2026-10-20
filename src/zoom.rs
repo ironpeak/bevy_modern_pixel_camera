@@ -33,13 +33,19 @@ pub enum PixelZoom {
     FitHeight(i32),
 }
 
-#[derive(Component, Debug, Clone, PartialEq)]
+impl Default for PixelZoom {
+    fn default() -> Self {
+        Self::Fixed(1)
+    }
+}
+
+#[derive(Component, Debug, Clone, PartialEq, Default)]
 /// Configure a `Camera2dBundle` to automatically scale the UI to fit the desired
 /// resolution (as defined by the `PixelZoom` component) displayed.
 pub struct WithUiScaling;
 
 // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
-#[derive(Component, Debug, Clone, PartialEq)]
+#[derive(Component, Debug, Clone, PartialEq, Default)]
 /// Configure a `Camera2dBundle` to automatically set the viewport so that only
 /// pixels inside the desired resolution (as defined by the `PixelZoom`
 /// component) are displayed.
