@@ -20,9 +20,9 @@ Note that Bevy uses linear sampling by default for textures, which is not
 what you want for pixel art. The easiest way to change this is to configure
 Bevy's default plugins with `ImagePlugin::default_nearest()`.
 
-Note that Bevy uses [MSAA](https://en.wikipedia.org/wiki/Multisample_anti-aliasing) 
-by default for textures, which is not what you want for pixel art The easiest way 
-to change this is to configure Bevy's by overriding the Msaa resource with 
+Note that Bevy uses [MSAA](https://en.wikipedia.org/wiki/Multisample_anti-aliasing)
+by default for textures, which is not what you want for pixel art The easiest way
+to change this is to configure Bevy's by overriding the Msaa resource with
 `.insert_resource(Msaa::Off)`.
 
 Also note that if either the width or the height of your sprite is not
@@ -79,6 +79,7 @@ cargo run --example scale_ui
 
 | bevy | bevy_modern_pixel_camera |
 | ---- | ------------------------ |
+| 0.20 | 0.6                      |
 | 0.18 | 0.5                      |
 | 0.17 | 0.4                      |
 | 0.16 | 0.3                      |
