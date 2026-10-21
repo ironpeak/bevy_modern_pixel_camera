@@ -1,5 +1,5 @@
 // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
-use bevy::prelude::*;
+use bevy::{prelude::*, ui_widgets};
 use bevy_modern_pixel_camera::prelude::*;
 
 const WIDTH: i32 = 320;
@@ -66,7 +66,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn base_button(text: impl Into<String>) -> impl Bundle {
     (
-        Button,
+        ui_widgets::Button,
         Node {
             width: Val::Px(60.0),
             height: Val::Px(20.0),

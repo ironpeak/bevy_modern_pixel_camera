@@ -1,7 +1,7 @@
 use bevy::{
     asset::{AssetEvent, AssetId},
-    camera::{Projection, RenderTarget, Viewport},
-    ecs::{message::MessageReader, system::ResMut},
+    camera::{Camera2d, Projection, RenderTarget, Viewport},
+    ecs::{entity::EntityHashSet, message::MessageReader, system::ResMut},
     log::debug,
     math::{UVec2, Vec2},
     platform::collections::HashSet,
@@ -13,11 +13,9 @@ use bevy::{
 
 // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
 #[derive(Component, Debug, Clone, PartialEq)]
-/// Configure a `Camera2dBundle` to use integer scaling and automatically match
+/// Configure a [`Camera2d`] to use integer scaling and automatically match
 /// a specified resolution.
-///
-/// Note: when this component is present, a plugin system will automatically
-/// update the `ScalingMode` of the camera bundle.
+#[require(Camera2d)]
 pub enum PixelZoom {
     /// Manually specify the camera zoom, i.e. the number of screen pixels
     /// (logical pixels) used to display one virtual pixel (world unit).
@@ -33,16 +31,24 @@ pub enum PixelZoom {
     FitHeight(i32),
 }
 
-#[derive(Component, Debug, Clone, PartialEq)]
-/// Configure a `Camera2dBundle` to automatically scale the UI to fit the desired
-/// resolution (as defined by the `PixelZoom` component) displayed.
+impl Default for PixelZoom {
+    fn default() -> Self {
+        Self::Fixed(1)
+    }
+}
+
+#[derive(Component, Debug, Clone, PartialEq, Default)]
+/// Configure a [`Camera2d`] to automatically scale the UI to fit the desired
+/// resolution (as defined by the [`PixelZoom`] component) displayed.
+#[require(PixelZoom)]
 pub struct WithUiScaling;
 
 // from: https://github.com/drakmaniso/bevy_pixel_camera/blob/main/src/pixel_zoom.rs
-#[derive(Component, Debug, Clone, PartialEq)]
-/// Configure a `Camera2dBundle` to automatically set the viewport so that only
-/// pixels inside the desired resolution (as defined by the `PixelZoom`
+#[derive(Component, Debug, Clone, PartialEq, Default)]
+/// Configure a [`Camera2d`] to automatically set the viewport so that only
+/// pixels inside the desired resolution (as defined by the [`PixelZoom`]
 /// component) are displayed.
+#[require(PixelZoom)]
 pub struct PixelViewport;
 
 #[allow(clippy::too_many_arguments)]
@@ -65,7 +71,7 @@ pub(crate) fn pixel_zoom_system(
     // from: https://github.com/bevyengine/bevy/blob/release-0.14.2/crates/bevy_render/src/camera/camera.rs
     let primary_window = primary_window.iter().next();
 
-    let mut changed_window_ids = HashSet::new();
+    let mut changed_window_ids = EntityHashSet::new();
     changed_window_ids.extend(window_created_events.read().map(|event| event.window));
     changed_window_ids.extend(window_resized_events.read().map(|event| event.window));
     let scale_factor_changed_window_ids: HashSet<_> = window_scale_factor_changed_events
